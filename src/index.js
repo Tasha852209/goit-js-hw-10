@@ -16,29 +16,47 @@ const refs = {
   error: document.querySelector('.error'),
 };
 
-fetchBreeds().then(breeds => {
-  toSelectWithBreeds(breeds);
-});
+showLoader();
+hideError();
+hideSelect();
+
+fetchBreeds()
+  .then(breeds => {
+    toSelectWithBreeds(breeds);
+  })
+  .catch(error => {
+    hideLoader();
+    showError();
+    console.error(error);
+  });
 
 function toSelectWithBreeds(breeds) {
   const optionsMarkup = breeds
     .map(({ id, name }) => `<option value="${id}">${name}</option>`)
     .join('');
-
   refs.selectField.insertAdjacentHTML('afterbegin', optionsMarkup);
+
+  showSelect();
+  hideLoader();
+
+  new SlimSelect({
+    select: refs.selectField,
+  });
 }
 
 refs.selectField.addEventListener('change', showSelectedCard);
 
 function showSelectedCard(event) {
   event.preventDefault();
+
   const selectedCard = event.target.value;
   console.log(event.target.value);
+  showLoader();
   fetchCatByBreed(selectedCard)
     .then(catData => {
       console.log(catData);
-      // hideLoader();
-      // hideError();
+      hideLoader();
+      hideError();
 
       refs.cardInfo.innerHTML = `<img src="${catData[0].url}" alt="" />
       <div class="characteristics-cat">
@@ -48,100 +66,33 @@ function showSelectedCard(event) {
       </div>`;
     })
     .catch(error => {
-      // hideLoader();
-      // showError();
+      hideLoader();
+      showError();
 
       console.error('Error fetching cat data:', error);
     });
 }
 
-// import { fetchBreeds } from './cat-api';
-// import { fetchCatByBreed } from './cat-api';
+function showLoader() {
+  return refs.loader.classList.remove('hidden');
+}
 
-// import SlimSelect from 'slim-select';
-// import 'slim-select/dist/slimselect.css';
-// import './styles.css';
+function hideLoader() {
+  return refs.loader.classList.add('hidden');
+}
 
-// const refs = {
-//   selectField: document.querySelector(`.breed-select`),
-//   cartdCard: document.querySelector(`.cat-info`),
-//   loader: document.querySelector(`.loader`),
-//   error: document.querySelector(`.error`),
-// };
+function showError() {
+  return refs.error.classList.remove('hidden');
+}
 
-// showLoader();
-// hideError();
-// hideSelect();
+function hideError() {
+  return refs.error.classList.add('hidden');
+}
 
-// fetchBreeds().then(breeds => {
-//   populateSelectWithBreeds(breeds);
-// });
+function hideSelect() {
+  return refs.selectField.classList.add('hidden');
+}
 
-// refs.selectField.addEventListener('change', showCardCat);
-
-// function populateSelectWithBreeds(breeds) {
-//   const optionsMarkup = breeds
-//     .map(({ id, name }, index) => `<option value="${id}">${name}</option>`)
-//     .join('');
-
-//   refs.selectField.insertAdjacentHTML(`afterbegin`, optionsMarkup);
-
-//   hideLoader();
-
-//   new SlimSelect({
-//     select: refs.selectField,
-//   });
-
-//   showSelect();
-// }
-
-// function showCardCat(event) {
-//   event.preventDefault();
-//   const selectedBreedId = event.target.value;
-
-//   showLoader();
-
-//   fetchCatByBreed(selectedBreedId)
-//     .then(catData => {
-//       hideLoader();
-//       hideError();
-
-//       refs.cartdCard.innerHTML = `<img src="${catData[0].url}" alt="" />
-//       <div class="characteristics-cat">
-//         <h2>${catData[0].breeds[0].name}</h2>
-//         <p>${catData[0].breeds[0].description}</p>
-//         <p><span class="temp">Temperament: </span>${catData[0].breeds[0].temperament}</p>
-//       </div>`;
-//     })
-//     .catch(error => {
-//       hideLoader();
-//       showError();
-
-//       console.error('Error fetching cat data:', error);
-//     });
-// }
-
-// function showLoader() {
-//   refs.cartdCard.innerHTML = ``;
-//   refs.loader.style.display = 'block';
-// }
-
-// function hideLoader() {
-//   refs.loader.style.display = 'none';
-// }
-
-// function showError() {
-//   refs.error.classList.remove('hidden');
-// }
-
-// function hideError() {
-//   refs.error.classList.add('hidden');
-// }
-
-// function showSelect() {
-//   refs.selectField.classList.remove('hidden');
-// }
-
-// function hideSelect() {
-//   refs.selectField.classList.add('hidden');
-// }
+function showSelect() {
+  return refs.selectField.classList.remove('hidden');
+}
