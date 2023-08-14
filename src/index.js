@@ -74,6 +74,7 @@ function showSelectedCard(event) {
 }
 
 function showLoader() {
+  refs.cardInfo.innerHTML = '';
   return refs.loader.classList.remove('hidden');
 }
 
